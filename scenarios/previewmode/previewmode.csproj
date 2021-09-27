@@ -64,7 +64,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetPath)" "$(SolutionDir)eBotScenarioPlayer\bin\$(ConfigurationName)\scenarios\$(TargetName)\" /Y
-xcopy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)eBotScenarioPlayer\bin\$(ConfigurationName)\scenarios\$(TargetName)\" /Y
-xcopy "$(TargetDir)templates" "$(SolutionDir)eBotScenarioPlayer\bin\$(ConfigurationName)\scenarios\$(TargetName)\templates\" /Y</PostBuildEvent>
+xcopy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)eBotScenarioPlayer\bin\$(ConfigurationName)\scenarios\$(TargetName)\" /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>
