@@ -338,3 +338,11 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/.svn
+/scenarios/p8_magical_trade
+/scenarios/p8_horidashimono
+/scenarios/p8_gantetsu_cram
+/scenarios/p8_fixsymbol_shiny
+/scenarios/p8_eternatus_selection
+/scenarios/p8_bonguri
+/scenarios/p8_battle_tower_wheel
