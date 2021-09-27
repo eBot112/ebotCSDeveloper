@@ -9,7 +9,7 @@ https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
 
 ### OpenCvSharp4 4.5.3.20210817
 https://github.com/shimat/opencvsharp  
-Copyright（c）2021 shimat 
+Copyright（c）2021 shimat  
 Released under the LApache-2.0  
 https://licenses.nuget.org/Apache-2.0
 
