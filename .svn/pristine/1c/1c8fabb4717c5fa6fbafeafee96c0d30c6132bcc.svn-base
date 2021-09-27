@@ -1,0 +1,170 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using eBotLib;
+using eBotLib.Scenario;
+
+namespace p8_eternatus_selection
+{
+    /// <summary>
+    /// シナリオクラス
+    /// </summary>
+    public class Scenario: Template
+    {
+        /// <summary>
+        /// ステータスチェック
+        /// </summary>
+        private enum STATUS_CHECK
+        {
+            NO_LABEL,
+            MISS,
+            MATCH
+        }
+
+        /// <summary>
+        /// シナリオシーケンス
+        /// </summary>
+        private enum SCENARIO_SEQUENCE
+        {
+            START,
+            BATTLE_WAIT,
+            STATUS_CHECK,
+        }
+
+        /// <summary>シナリオ現在位置</summary>
+        SCENARIO_SEQUENCE sequence = SCENARIO_SEQUENCE.START;
+
+        /// <summary>
+        /// ヘルプメッセージ
+        /// </summary>
+        public override string HelpTipMessage
+        {
+            get
+            {
+                return "ムゲンダイナ厳選シナリオ\n" +
+                    "1戦目スキップ、2戦目階段前からスタート\n" +
+                    "先頭の技のみで倒せること";
+            }
+        }
+        
+        /// <summary>
+        /// テンプレート画像の保存フォルダ
+        /// </summary>
+        protected override string TemplateDirectory
+        {
+            get
+            {
+                return System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\templates";
+            }
+        }
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="capture">ビデオキャプチャ</param>
+        /// <param name="titan">コントローラ</param>
+        /// <param name="analysisPreview">プレビュー</param>
+        public Scenario(eBotLib.Capture.DirectCapturePictureBox capture, TitanWrapper.Wrapper titan = null,
+            AnalysisPreviewControl analysisPreview = null) : base(capture, titan, analysisPreview, 100)
+        {
+        }
+
+        /// <summary>
+        /// テンプレートマッチング用パラメータの作成
+        /// </summary>
+        protected override void MakeMatchingParams()
+        {
+            SetTemplateMatchingParam("stslbl_a_normal", "stslbl_a_normal.bmp", 0.95, 600, 255, 148, 60);
+            SetTemplateMatchingParam("stslbl_a_down", "stslbl_a_down.bmp", 0.95, 600, 255, 148, 60);
+            SetTemplateMatchingParam("stslbl_a_up", "stslbl_a_up.bmp", 0.95, 600, 255, 148, 60);
+            SetTemplateMatchingParam("sta_location", "sta_location.bmp", 0.93, 89, 286, 823, 184);
+            SetTemplateMatchingParam("connect", "connect.bmp", 0.95, 0, 975, 91, 105);
+            SetOCRMatchingParam("stsval_a", "", 622, 310, 103, 45, "eng", 7, "0123456789");
+        }
+
+        /// <summary>
+        /// ステータスチェック
+        /// </summary>
+        /// <param name="template"></param>
+        /// <param name="param"></param>
+        /// <returns>結果</returns>
+        private STATUS_CHECK statusCheck(string template, string param)
+        {
+            string stsValA;
+            STATUS_CHECK ret;
+
+            if (TemplateMatching(template))
+            {
+                OCRMatching("stsval_a", out stsValA, true);
+                if (!stsValA.Equals(param))
+                {
+                    analysisPreview.Out(template + ": NG(" + stsValA + ")");
+                    ret = STATUS_CHECK.MISS;
+                }
+                else
+                {
+                    analysisPreview.Out(template + ": OK(" + stsValA + ")");
+                    ret = STATUS_CHECK.MATCH;
+                }
+            } else
+            {
+                ret = STATUS_CHECK.NO_LABEL;
+            }
+
+            return ret;
+        }  
+
+        /// <summary>
+        /// シナリオ更新
+        /// </summary>
+        /// <remarks>INTERVAL周期でスナップショットを撮像しTickが実行される。</remarks>
+        /// <returns>継続フラグ</returns>
+        protected override bool Tick()
+        {
+            switch(sequence)
+            {
+                case SCENARIO_SEQUENCE.START:
+                    if (TemplateMatching("sta_location", 4, 200))
+                    {
+                        this.analysisPreview.Out("Pattern Found: sta_location");
+                        this.ButtonClick((int)TitanWrapper.TitanOne.KEY_MAP_SWITCH.LY, 5000, 500, true, false);
+                        this.analysisPreview.Out("goto: BATTLE_WAIT");
+                        sequence = SCENARIO_SEQUENCE.BATTLE_WAIT;
+                    }
+                    else
+                    {
+                        this.ButtonClick((int)TitanWrapper.TitanOne.KEY_MAP_SWITCH.A, 100, 0);
+                    }
+                    break;
+                case SCENARIO_SEQUENCE.BATTLE_WAIT:
+                    if (TemplateMatching("connect", 4))
+                    {
+                        this.analysisPreview.Out("goto: STATUS_CHECK");
+                        sequence = SCENARIO_SEQUENCE.STATUS_CHECK;
+                    }
+                    else
+                    {
+                        this.ButtonClick((int)TitanWrapper.TitanOne.KEY_MAP_SWITCH.A, 100, 500);
+                    }
+                    break;
+                case SCENARIO_SEQUENCE.STATUS_CHECK:
+                    STATUS_CHECK status;
+
+                    if (STATUS_CHECK.NO_LABEL != (status = statusCheck("stslbl_a_normal", "107")))
+                    {
+                    }
+                    else if (STATUS_CHECK.NO_LABEL != (status = statusCheck("stslbl_a_up", "117")))
+                    {
+                    }
+                    else if (STATUS_CHECK.NO_LABEL != (status = statusCheck("stslbl_a_down", "107")))
+                    {
+                    }
+                    break;
+            }
+
+            return true;
+        }
+    }
+}
