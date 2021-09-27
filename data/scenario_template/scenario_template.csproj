@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F69BAADF-AB5A-4940-A073-8421F51AB8F9}</ProjectGuid>
+    <ProjectGuid>{5E396096-3463-4422-A8C6-8553B1ED95A2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>scenario_template</RootNamespace>
@@ -52,11 +52,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\eBotLib\eBotLib.csproj">
+    <ProjectReference Include="..\..\eBotLib\eBotLib.csproj">
       <Project>{32bb7382-36c4-4d83-b300-91dc3b90ce57}</Project>
       <Name>eBotLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TitanWrapper\TitanWrapper.csproj">
+    <ProjectReference Include="..\..\TitanWrapper\TitanWrapper.csproj">
       <Project>{cba89537-bfb6-4b12-824a-eccd67f98bba}</Project>
       <Name>TitanWrapper</Name>
     </ProjectReference>
@@ -70,6 +70,6 @@
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetPath)" "$(SolutionDir)eBotScenarioPlayer\bin\$(ConfigurationName)\scenarios\$(TargetName)\" /Y
 xcopy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)eBotScenarioPlayer\bin\$(ConfigurationName)\scenarios\$(TargetName)\" /Y
-xcopy "$(TargetDir)templates" "$(SolutionDir)eBotScenarioPlayer\bin\$(ConfigurationName)\scenarios\$(TargetName)\templates\" /Y</PostBuildEvent>
+if exist "$(TargetDir)templates" (xcopy "$(TargetDir)templates" "$(SolutionDir)eBotScenarioPlayer\bin\$(ConfigurationName)\scenarios\$(TargetName)\templates\" /Y)</PostBuildEvent>
   </PropertyGroup>
 </Project>
