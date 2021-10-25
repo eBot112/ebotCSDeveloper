@@ -108,6 +108,8 @@ namespace eBotLib.Scenario
         private Bitmap snapShotImage;
         /// <summary>更新周期[msec]</summary>
         private int interval;
+        /// <summary>周期毎にスナップショットを自動取得するか</summary>
+        private bool isAutomaticSnapshot;
 
         /// <summary>スナップショット排他制御用オブジェクト</summary>
         private object lockSnapshotObject;
@@ -143,12 +145,14 @@ namespace eBotLib.Scenario
         /// <param name="titan">コントローラ</param>
         /// <param name="analysisPreview">プレビュー画面</param>
         /// <param name="interval">更新周期[msec]</param>
-        public Template(Capture.DirectCapturePictureBox capture, TitanWrapper.Wrapper titan, AnalysisPreviewControl analysisPreview, int interval = 100)
+        /// <param name="isAutomaticSnapshot">周期毎にスナップショットを自動取得するか</param>
+        public Template(Capture.DirectCapturePictureBox capture, TitanWrapper.Wrapper titan, AnalysisPreviewControl analysisPreview, int interval = 100, bool isAutomaticSnapshot = true)
         {
             this.capture = capture;
             this.titan = titan;
             this.analysisPreview = analysisPreview;
             this.interval = interval;
+            this.isAutomaticSnapshot = isAutomaticSnapshot;
 
             this.lockSnapshotObject = new object();
 
@@ -178,7 +182,10 @@ namespace eBotLib.Scenario
                     this.countdownScenarioReady.Wait();
 
                     // スナップショットの要求
-                    this.UpdateSnapshot();
+                    if (this.isAutomaticSnapshot)
+                    {
+                        this.UpdateSnapshot();
+                    }
 
                     // シナリオ実行
                     if (this.requestAbort || !Tick())
